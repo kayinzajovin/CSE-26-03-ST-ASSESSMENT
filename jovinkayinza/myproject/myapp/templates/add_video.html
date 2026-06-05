@@ -1,0 +1,353 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Upload Your Video</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: Arial, sans-serif;
+      }
+
+      body {
+        background: #f4f5f8;
+        color: #1b1d23;
+        min-height: 100vh;
+        padding: 32px;
+      }
+
+      .page-wrapper {
+        max-width: 1080px;
+        margin: 0 auto;
+      }
+
+      .page-heading {
+        font-size: 32px;
+        font-weight: 800;
+        margin-bottom: 24px;
+      }
+
+      .form-grid {
+        display: grid;
+        grid-template-columns: 1.1fr 0.9fr;
+        gap: 24px;
+      }
+
+      .form-panel,
+      .upload-panel {
+        background: #fff;
+        border-radius: 24px;
+        padding: 24px;
+        box-shadow: 0 12px 30px rgba(3, 17, 64, 0.08);
+      }
+
+      .field-group {
+        display: grid;
+        gap: 18px;
+      }
+
+      .field-group input,
+      .field-group textarea,
+      .field-group select {
+        width: 100%;
+        border: 1px solid #e3e7ef;
+        border-radius: 14px;
+        padding: 16px 18px;
+        font-size: 15px;
+        background: #fbfbfd;
+        color: #222;
+        outline: none;
+        transition:
+          border-color 0.2s ease,
+          box-shadow 0.2s ease;
+      }
+
+      .field-group input:focus,
+      .field-group textarea:focus,
+      .field-group select:focus {
+        {% comment %} border-color: #d60000; {% endcomment %}
+        box-shadow: 0 0 0 3px rgba(214, 0, 0, 0.08);
+      }
+
+      .field-group textarea {
+        min-height: 160px;
+        resize: vertical;
+      }
+
+      .field-row {
+        display: grid;
+        gap: 18px;
+      }
+
+      .field-row .field-half {
+        width: 100%;
+      }
+
+      .upload-card,
+      .thumbnail-card {
+        background: #f3f4f8;
+        border-radius: 20px;
+        border: 2px dashed #dde2ec;
+        min-height: 220px;
+        display: grid;
+        place-items: center;
+        text-align: center;
+        color: #7c8494;
+        font-size: 16px;
+      }
+      /* left panel is the form, right panel is just design placeholders */
+
+      .upload-card {
+        min-height: 260px;
+      }
+
+      .upload-card i,
+      .thumbnail-card i {
+        font-size: 40px;
+        margin-bottom: 14px;
+        color: #9aa2b8;
+      }
+
+      .upload-card span,
+      .thumbnail-card span {
+        display: block;
+        font-weight: 700;
+        margin-top: 10px;
+      }
+
+      .upload-button {
+        margin-top: 22px;
+        width: 100%;
+        padding: 18px;
+        border: none;
+        border-radius: 16px;
+        background: #d60000;
+        color: #fff;
+        font-size: 16px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: background 0.2s ease;
+      }
+
+      .upload-button:hover {
+        background: #b20000;
+      }
+
+      .error-text {
+        color: #c03221;
+        font-size: 13px;
+        margin-top: 6px;
+      }
+
+      .success-message {
+        background: #d1fae5;
+        color: #166534;
+        border: 1px solid #a7f3d0;
+        border-radius: 14px;
+        padding: 14px 18px;
+        margin-bottom: 18px;
+      }
+
+      .field-error {
+        border-color: #c03221;
+      }
+
+      @media (max-width: 900px) {
+        .form-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page-wrapper">
+      <h1 class="page-heading">Upload your video</h1>
+
+      <div class="form-grid">
+        <!-- Left side: video upload form -->
+        <div class="form-panel">
+          <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <!-- Show a success message when the upload works -->
+            {% if success %}
+            <div class="success-message">Video uploaded successfully.</div>
+            {% endif %}
+            <div class="field-group">
+              <div>
+                <input
+                  type="text"
+                  name="title"
+                  placeholder="Video Title"
+                  value="{{ values.title }}"
+                  class="{% if errors.title %}field-error{% endif %}"
+                />
+                {% if errors.title %}
+                <p class="error-text">{{ errors.title }}</p>
+                {% endif %}
+              </div>
+
+              <div>
+                <textarea
+                  name="description"
+                  placeholder="Description (Optional)"
+                  class="{% if errors.description %}field-error{% endif %}"
+                >
+{{ values.description }}</textarea
+                >
+                {% if errors.description %}
+                <p class="error-text">{{ errors.description }}</p>
+                {% endif %}
+              </div>
+
+              <div>
+                <select
+                  name="quality"
+                  class="{% if errors.quality %}field-error{% endif %}"
+                >
+                  <option
+                    value=""
+                    disabled
+                    {%
+                    if
+                    not
+                    values.quality
+                    %}selected{%
+                    endif
+                    %}
+                  >
+                    Video quality
+                  </option>
+                  <option
+                    value="720p"
+                    {%
+                    if
+                    values.quality=""
+                    ="720p"
+                    %}selected{%
+                    endif
+                    %}
+                  >
+                    720p
+                  </option>
+                  <option
+                    value="1080p"
+                    {%
+                    if
+                    values.quality=""
+                    ="1080p"
+                    %}selected{%
+                    endif
+                    %}
+                  >
+                    1080p
+                  </option>
+                  <option
+                    value="4k"
+                    {%
+                    if
+                    values.quality=""
+                    ="4k"
+                    %}selected{%
+                    endif
+                    %}
+                  >
+                    4K
+                  </option>
+                </select>
+                {% if errors.quality %}
+                <p class="error-text">{{ errors.quality }}</p>
+                {% endif %}
+              </div>
+
+              <div>
+                <input
+                  type="date"
+                  name="publish_date"
+                  value="{{ values.publish_date }}"
+                  class="{% if errors.publish_date %}field-error{% endif %}"
+                />
+                {% if errors.publish_date %}
+                <p class="error-text">{{ errors.publish_date }}</p>
+                {% endif %}
+              </div>
+
+              <div>
+                <input
+                  type="file"
+                  name="video_file"
+                  accept="video/*"
+                  class="{% if errors.video_file %}field-error{% endif %}"
+                />
+                {% if errors.video_file %}
+                <p class="error-text">{{ errors.video_file }}</p>
+                {% endif %}
+              </div>
+
+              <div>
+                <input
+                  type="file"
+                  name="thumbnail_file"
+                  accept="image/*"
+                  class="{% if errors.thumbnail_file %}field-error{% endif %}"
+                />
+                {% if errors.thumbnail_file %}
+                <p class="error-text">{{ errors.thumbnail_file }}</p>
+                {% endif %}
+              </div>
+            </div>
+            
+          </form>
+        </div>
+
+        <!-- Right side: preview panel for the uploaded files -->
+        <div class="upload-panel">
+          <div class="upload-card">
+            {% if preview.video_url %}
+            <video
+              controls
+              style="
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                max-height: 260px;
+              "
+            >
+              <source src="{{ preview.video_url }}" />
+              Your browser does not support the video tag.
+            </video>
+            {% else %}
+            <i class="fa-solid fa-cloud-arrow-up"></i>
+            <span>Upload video</span>
+            {% endif %}
+          </div>
+          <div class="thumbnail-card" style="margin-top: 24px">
+            {% if preview.thumbnail_url %}
+            <img
+              src="{{ preview.thumbnail_url }}"
+              alt="Uploaded thumbnail"
+              style="
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                border-radius: 20px;
+              "
+            />
+            {% else %}
+            <i class="fa-solid fa-cloud-arrow-up"></i>
+            <span>Upload Thumbnail</span>
+            {% endif %}
+            
+          </div>
+          <button class="upload-button" type="submit">UPLOAD</button>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

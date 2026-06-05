@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Videx | Video Listing</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: Arial, sans-serif;
+      }
+
+      body {
+        background: #f5f7fb;
+        color: #111;
+        min-height: 100vh;
+        padding: 24px;
+      }
+
+      .page-container {
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      .page-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 24px;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        color: #d60000;
+        font-weight: 700;
+        font-size: 32px;
+      }
+
+      .brand i {
+        font-size: 34px;
+      }
+
+      .action-btn {
+        border: 2px solid #d60000;
+        background: transparent;
+        color: #d60000;
+        padding: 12px 24px;
+        font-weight: 700;
+        border-radius: 8px;
+        cursor: pointer;
+        text-decoration: none;
+        transition:
+          background 0.25s ease,
+          color 0.25s ease;
+      }
+
+      .action-btn:hover {
+        background: #d60000;
+        color: #fff;
+      }
+
+      .section-title {
+        margin-bottom: 16px;
+        font-size: 20px;
+        font-weight: 700;
+        letter-spacing: 0.02em;
+      }
+
+      .divider {
+        height: 1px;
+        background: #dfe3e8;
+        margin-bottom: 24px;
+        border: none;
+      }
+
+      .video-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+      }
+
+      .video-card {
+        background: #fff;
+        border-radius: 18px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(15, 23, 42, 0.07);
+        transition:
+          transform 0.25s ease,
+          box-shadow 0.25s ease;
+      }
+
+      .video-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 18px 42px rgba(15, 23, 42, 0.12);
+      }
+
+      .video-thumb {
+        height: 170px;
+        background: #d60000;
+        display: flex;
+        align-items: flex-end;
+        padding: 16px;
+        color: #fff;
+        font-size: 14px;
+        font-weight: 700;
+      }
+
+      .video-thumb.blue {
+        background: #9dc6ea;
+        color: #111;
+      }
+      .video-thumb.red {
+        background: #c50000;
+      }
+      .video-thumb.navy {
+        background: #032c5f;
+      }
+      .video-thumb.purple {
+        background: #4e0b5a;
+      }
+      .video-thumb.yellow {
+        background: #f2b700;
+        color: #111;
+      }
+      .video-thumb.teal {
+        background: #1e4f77;
+      }
+      .video-thumb.green {
+        background: #4b7b3f;
+      }
+      .video-thumb.olive {
+        background: #8c7a1f;
+      }
+
+      .video-body {
+        padding: 18px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .video-title {
+        font-size: 16px;
+        font-weight: 700;
+        line-height: 1.3;
+        color: #111;
+      }
+
+      .video-meta {
+        display: flex;
+        gap: 8px;
+        color: #6a7280;
+        font-size: 13px;
+      }
+
+      .video-meta span::before {
+        content: "•";
+        margin: 0 6px 0 0;
+        color: #c2c8d5;
+      }
+
+      .video-meta span:first-child::before {
+        content: "";
+        margin: 0;
+      }
+
+      .video-menu {
+        display: flex;
+        justify-content: flex-end;
+        color: #6a7280;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page-container">
+      <!-- Header shows app name and add video button -->
+      <header class="page-header">
+        <div class="brand">
+          <i class="fa-solid fa-circle-play"></i>
+          Videx
+        </div>
+        <a class="action-btn" href="{% url 'add_video' %}">Add Video</a>
+      </header>
+
+      <!-- Grid of video cards -->
+      <div class="video-grid">
+        {% if videos %}
+        <!-- Loop through each uploaded video and show it in a card -->
+        {% for video in videos %}
+        <article class="video-card">
+          <div class="video-thumb">
+            {% if video.video_file %}
+            <video
+              controls
+              style="
+                width: 100%;
+                height: 170px;
+                object-fit: cover;
+                background: #000;
+              "
+            >
+              <source src="{{ video.video_file.url }}" />
+              Your browser does not support the video tag.
+            </video>
+            {% elif video.thumbnail_file %}
+            <img
+              src="{{ video.thumbnail_file.url }}"
+              alt="{{ video.title }} thumbnail"
+              style="
+                width: 100%;
+                height: 170px;
+                object-fit: cover;
+                display: block;
+              "
+            />
+            {% else %} {{ video.title|truncatechars:60 }} {% endif %}
+          </div>
+          <div class="video-body">
+            <div class="video-title">{{ video.title }}</div>
+            <div class="video-meta">
+              <span>{{ video.quality }}</span>
+              <span>{{ video.publish_date }}</span>
+            </div>
+            <div class="video-meta">
+              <span>{{ video.video_file.name|slice:'-20:' }}</span>
+              <span>{{ video.uploaded_at|date:'M j, Y' }}</span>
+            </div>
+          </div>
+        </article>
+        {% endfor %} {% else %}
+        <div
+          style="
+            grid-column: 1 / -1;
+            background: #fff;
+            padding: 32px;
+            border-radius: 18px;
+            text-align: center;
+            color: #4b5563;
+          "
+        >
+          <p style="font-size: 18px; margin-bottom: 12px">
+            No videos uploaded yet.
+          </p>
+          <a class="action-btn" href="{% url 'add_video' %}"
+            >Upload the first video</a
+          >
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Videx</title>
+
+    <!-- Font Awesome icons for the page -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: Arial, sans-serif;
+      }
+
+      body {
+        background: #efefef;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+      }
+
+      .container {
+        text-align: center;
+      }
+
+      .logo {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 15px;
+        margin-bottom: 30px;
+      }
+
+      .logo i {
+        font-size: 60px;
+        color: red;
+      }
+
+      .logo h1 {
+        font-size: 70px;
+        color: red;
+        font-weight: bold;
+      }
+
+      .join-btn {
+        padding: 12px 80px;
+        border: 2px solid red;
+        background: transparent;
+        color: red;
+        font-weight: bold;
+        cursor: pointer;
+        border-radius: 4px;
+        transition: 0.3s;
+      }
+
+      .join-btn:hover {
+        background: red;
+        color: white;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <!-- App logo and title -->
+      <div class="logo">
+        <i class="fa-solid fa-circle-play"></i>
+        <h1>Videx</h1>
+      </div>
+
+      <!-- Login button goes to the video listing page -->
+      <a class="join-btn" href="{% url 'video_listing' %}"> LOGIN </a>
+    </div>
+  </body>
+</html>
